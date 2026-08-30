@@ -15,8 +15,20 @@ jobs:
       - name: Télécharger le projet
         uses: actions/checkout@v4
 
-      - name: Installer les outils Nintendo DS
-        run: dkp-pacman -S --noconfirm nds-dev
+      - name: Vérifier devkitPro
+        run: |
+          echo "DEVKITPRO=$DEVKITPRO"
+          echo "DEVKITARM=$DEVKITARM"
+          dkp-pacman -Syy --noconfirm
+
+      - name: Installer libnds
+        run: |
+          dkp-pacman -S --needed --noconfirm nds-dev
+
+      - name: Vérifier libnds
+        run: |
+          test -f "$DEVKITPRO/libnds/lib/libnds9.a"
+          echo "libnds9 trouvé !"
 
       - name: Compiler
         run: make -j$(nproc)
