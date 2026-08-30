@@ -8,32 +8,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    container:
-      image: devkitpro/devkitarm:latest
-
     steps:
       - name: Télécharger le projet
         uses: actions/checkout@v4
 
-      - name: Vérifier devkitPro
+      - name: Construire l'environnement DS
+        run: docker build -t badtimeds-builder .
+
+      - name: Compiler le jeu
         run: |
-          echo "DEVKITPRO=$DEVKITPRO"
-          echo "DEVKITARM=$DEVKITARM"
-          dkp-pacman -Syy --noconfirm
+          docker run --rm \
+            -v "${{ github.workspace }}:/source" \
+            -w /source \
+            badtimeds-builder \
+            make -j$(nproc)
 
-      - name: Installer libnds
-        run: |
-          dkp-pacman -S --needed --noconfirm nds-dev
-
-      - name: Vérifier libnds
-        run: |
-          test -f "$DEVKITPRO/libnds/lib/libnds9.a"
-          echo "libnds9 trouvé !"
-
-      - name: Compiler
-        run: make -j$(nproc)
-
-      - name: Sauvegarder le fichier NDS
+      - name: Récupérer le fichier NDS
         uses: actions/upload-artifact@v4
         with:
           name: badtimeds-nds
