@@ -15,6 +15,9 @@ jobs:
       - name: Télécharger le projet
         uses: actions/checkout@v4
 
+      - name: Installer les outils Nintendo DS
+        run: dkp-pacman -S --noconfirm nds-dev
+
       - name: Compiler
         run: make -j$(nproc)
 
@@ -23,4 +26,3 @@ jobs:
         with:
           name: badtimeds-nds
           path: "*.nds"
-      
