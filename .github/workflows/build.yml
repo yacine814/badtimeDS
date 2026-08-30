@@ -1,0 +1,26 @@
+name: Compiler le jeu Nintendo DS
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: devkitpro/devkitarm:latest
+
+    steps:
+      - name: Télécharger le projet
+        uses: actions/checkout@v4
+
+      - name: Compiler
+        run: make -j$(nproc)
+
+      - name: Sauvegarder le fichier NDS
+        uses: actions/upload-artifact@v4
+        with:
+          name: badtimeds-nds
+          path: "*.nds"
+      
